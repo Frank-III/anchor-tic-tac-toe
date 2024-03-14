@@ -7,14 +7,14 @@ pub mod instructions;
 pub mod state;
 
 // this key needs to be changed to whatever public key is returned by "anchor keys list"
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("5sW8nwciGgc2iG8YxXKGSUsU5fxekGRYoL6br1dFX6nf");
 
 #[program]
 pub mod tic_tac_toe {
     use super::*;
 
-    pub fn new_game(ctx: Context<NewGame>) -> Result<()> {
-        instructions::new_game::new_game(ctx)
+    pub fn new_game(ctx: Context<NewGame>, game_id: String) -> Result<()> {
+        instructions::new_game::new_game(ctx, game_id)
     }
 
     pub fn join_game(ctx: Context<JoinGame>, player_two: Pubkey) -> Result<()> {

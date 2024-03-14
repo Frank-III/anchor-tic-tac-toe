@@ -9,4 +9,5 @@ pub fn start_game(ctx: Context<StartGame>) -> Result<()> {
 pub struct StartGame<'info> {
     #[account(mut)]
     pub game: Account<'info, Game>,
+    pub player_one: Signer<'info>,
 }

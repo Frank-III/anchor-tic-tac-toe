@@ -21,7 +21,7 @@ impl Game {
     }
 
     pub fn join_game(&mut self, player_two: Pubkey) -> Result<()> {
-        require_eq!(
+        require_keys_eq!(
             self.players[1],
             Pubkey::default(),
             TicTacToeError::GameAlreadyStarted
