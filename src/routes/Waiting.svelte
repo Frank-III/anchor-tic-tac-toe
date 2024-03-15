@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { gameState } from '$lib/stores/gameState';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { walletStore } from '@portal-payments/wallet-adapter-core';
 	import { workSpace } from '@portal-payments/wallet-adapter-anchor';
-	import { PublicKey } from '@solana/web3.js';
+	import { type PublicKey } from '@solana/web3.js';
 	import * as borsh from '@coral-xyz/borsh';
 	import { toast } from 'svelte-sonner';
 
@@ -40,6 +40,18 @@
 			});
 	}
 
+	onMount(async () => {
+		await $workSpace.program?.account.game.fetch($gameState.gamePda!).then((res: any) => {
+			gameState.update((val) => ({
+				...val,
+				state: res.state,
+				players: res.players,
+				gameBoard: res.board,
+				turn: res.turn
+			}));
+		});
+	});
+
 	onDestroy(() => {
 		unsubscribe();
 	});
@@ -50,7 +62,11 @@
 	<p>Share the game id with your friend to join the game.</p>
 	<p>Game Id: {gameId}</p>
 	{#each players as player}
-		<p class="text-md">{player.toBase58()}</p>
+		{#if player.toBase58() !== '11111111111111111111111111111111'}
+			<p class="text-md">{player.toBase58()}</p>
+		{/if}
 	{/each}
-	<Button disabled={players.length < 2} on:click={startGame}>Start Game</Button>
+	{#if $gameState.isHost}
+		<Button disabled={players.length < 2} on:click={startGame}>Start Game</Button>
+	{/if}
 </div>

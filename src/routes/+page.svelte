@@ -2,7 +2,6 @@
 	import { WalletButton } from '@portal-payments/wallet-adapter-ui';
 	import { walletStore } from '@portal-payments/wallet-adapter-core';
 	import { workSpace } from '@portal-payments/wallet-adapter-anchor';
-	import { fly } from 'svelte/transition';
 	import { gameState } from '$lib/stores/gameState';
 	import { toast } from 'svelte-sonner';
 	import NotBegin from './NotBegin.svelte';
@@ -11,6 +10,10 @@
 	import { onDestroy } from 'svelte';
 	import GameBoard from './GameBoard.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { BorshCoder } from '@project-serum/anchor';
+	import idl from '../../tic-tac-toe/target/idl/tic_tac_toe.json';
+
+	const coder = new BorshCoder(idl); // Initialize BorshCoder with your program's IDL
 
 	// let value;
 	let gameId: string;
@@ -29,16 +32,24 @@
 
 	$: if (gameId && gamePda && $walletStore.publicKey && $workSpace.program) {
 		gameSub = $workSpace.connection.onAccountChange(gamePda, async (updateInfo, context) => {
-			await $workSpace.program?.account.game.fetch(gamePda!).then((res: any) => {
-				console.log(res);
-				gameState.update((val) => ({
-					...val,
-					state: res.state,
-					players: res.players,
-					gameBoard: res.board,
-					turn: res.turn
-				}));
-			});
+			const game = coder.accounts.decode('Game', updateInfo.data);
+			gameState.update((val) => ({
+				...val,
+				state: game.state,
+				players: game.players,
+				gameBoard: game.board,
+				turn: game.turn
+			}));
+			// await $workSpace.program?.account.game.fetch(gamePda!).then((res: any) => {
+			// 	console.log(res);
+			// 	gameState.update((val) => ({
+			// 		...val,
+			// 		state: res.state,
+			// 		players: res.players,
+			// 		gameBoard: res.board,
+			// 		turn: res.turn
+			// 	}));
+			// });
 		});
 	}
 
@@ -75,6 +86,10 @@
 		isHost = val.isHost;
 	});
 
+	$: if (state !== undefined && gameSub) {
+		$workSpace.connection.removeAccountChangeListener(gameSub);
+	}
+
 	onDestroy(() => {
 		unsubscribe();
 		if (gameSub) {
@@ -90,7 +105,7 @@
 
 	<div class="absolute right-3 top-3 flex flex-row gap-5">
 		{#if isHost && state && ('won' in state || 'tie' in state)}
-			<Button on:click={() => {}}>Home</Button>
+			<Button on:click={closeGame}>Home</Button>
 		{/if}
 		<WalletButton />
 	</div>

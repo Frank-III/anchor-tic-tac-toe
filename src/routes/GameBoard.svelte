@@ -55,10 +55,10 @@
 	<h1 class="text-2xl">Tic Tac Toe</h1>
 	<h2>Turn: {turn}</h2>
 	{#each gameBoard as row, i}
-		<div class="flex">
+		<div class="flex gap-5">
 			{#each row as cell, j}
 				<button
-					class="flex h-16 w-16 items-center justify-center border-2 border-black bg-white"
+					class="flex h-16 w-16 items-center justify-center bg-white hover:border hover:border-yellow-300"
 					type="button"
 					disabled={cell !== null || !myTurn}
 					on:click={() => {
