@@ -1,18 +1,59 @@
 <script lang="ts">
-	import { WalletMultiButton } from '@aztemi/svelte-on-solana-wallet-adapter-ui';
-	import { walletStore } from '@aztemi/svelte-on-solana-wallet-adapter-core';
-	import { workSpace } from '@aztemi/svelte-on-solana-wallet-adapter-ui';
+	import { WalletButton } from '@portal-payments/wallet-adapter-ui';
+	import { walletStore } from '@portal-payments/wallet-adapter-core';
+	import { workSpace } from '@portal-payments/wallet-adapter-anchor';
 	import { fly } from 'svelte/transition';
+	import { gameState } from '$lib/stores/gameState';
+	import { toast } from 'svelte-sonner';
+	import NotBegin from './NotBegin.svelte';
+	import Waiting from './Waiting.svelte';
+	import { PublicKey } from '@solana/web3.js';
+	import { onDestroy } from 'svelte';
+	import GameBoard from './GameBoard.svelte';
 
 	// let value;
-	function newGame() {}
+	let gameId: string;
+	let gamePda: PublicKey | undefined;
+	let gameSub: number;
 
-	// $: console.log('value: ', value);
+	$: if (gameId && $walletStore.publicKey && $workSpace.program) {
+		const [gamePda] = PublicKey.findProgramAddressSync(
+			[Buffer.from('game'), Buffer.from(gameId)],
+			$workSpace.program?.programId
+		);
+		gameState.update((val) => ({ ...val, gamePda: gamePda }));
+	}
+
+	$: if (gameId && $walletStore.publicKey && $workSpace.program && gamePda) {
+		gameSub = $workSpace.connection.onAccountChange(gamePda, async (updateInfo, context) => {
+			await $workSpace.program?.account.game.fetch(gamePda).then((res) => {
+				console.log(res);
+				gameState.update((val) => ({
+					...val,
+					players: res.players,
+					gameBoard: res.board,
+					turn: res.turn
+				}));
+			});
+		});
+	}
+
+	const unsubscribe = gameState.subscribe((val) => {
+		gameId = val.gameId;
+		gamePda = val.gamePda;
+	});
+
+	onDestroy(() => {
+		unsubscribe();
+		if (gameSub) {
+			$workSpace.connection.removeAccountChangeListener(gameSub);
+		}
+	});
 </script>
 
-<div class="wrapper-app">
-	<div class="title">
-		<h1>Solana Svelte Counter</h1>
+<div class="wrapper-app h-[100vh] w-full">
+	<div class="title absolute top-0 flex h-[60px] flex-row items-center justify-center">
+		<h1>Solana Tic Tac Toe</h1>
 		<p>
 			Demo of <a href="https://github.com/solana-labs/wallet-adapter"
 				>svelte-on-solana/wallet-adapter</a
@@ -21,90 +62,25 @@
 		</p>
 	</div>
 
-	<div class="address">
-		<WalletMultiButton />
+	<div class="absolute right-3 top-3">
+		<WalletButton />
 	</div>
 
 	{#if $walletStore?.connected}
-		<div class="wrapper-content">
-			<!-- {#if value}
-				<button on:click={increment}>Increment</button>
-				<p class="value">
-					Value:
-					{#key value}
-						<span in:fly={{ duration: 500, y: -100 }} out:fly={{ duration: 500, y: 100 }}
-							>{value}</span
-						>
-					{/key}
-				</p>
+		<div class="wrapper-content flex h-full w-full flex-col items-center justify-center">
+			<p class="warning">You are connected to DevNet!</p>
+			{#if !$gameState.gameId}
+				<NotBegin />
+			{:else if $gameState.gameId && $gameState.turn === 0}
+				<Waiting />
 			{:else}
-				<button on:click={createCounter}>Create counter</button>
-			{/if} -->
+				<GameBoard />
+			{/if}
 		</div>
-		<p class="warning">You are connected to DevNet!</p>
 	{:else}
 		<p class="warning">You are not connected...</p>
 	{/if}
 </div>
 
 <style>
-	:global(body) {
-		padding: 100px;
-		margin: 0;
-		background-color: #333333;
-	}
-	.wrapper-app {
-		height: 100vh;
-		font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-	}
-	.title {
-		text-align: center;
-		color: white;
-		font-size: 20px;
-		margin-bottom: 40px;
-	}
-
-	a {
-		color: #676796;
-	}
-
-	.address {
-		position: absolute;
-		right: 30px;
-		top: 30px;
-		border-radius: 5px;
-		padding: 10px;
-	}
-
-	.wrapper-content {
-		border-radius: 5px;
-		padding: 50px;
-		width: 400px;
-		margin: 0 auto;
-		text-align: center;
-		margin-bottom: 30px;
-	}
-
-	button {
-		border: none;
-		padding: 16px;
-		border-radius: 5px;
-		font-size: 16px;
-		cursor: pointer;
-		color: white;
-		background-color: #4e44ce;
-	}
-
-	.value {
-		font-size: 40px;
-		padding: 25px;
-		color: white;
-	}
-
-	.warning {
-		color: #ca4b4b;
-		text-align: center;
-		padding: 40px;
-		font-size: 20px;
-	}
 </style>

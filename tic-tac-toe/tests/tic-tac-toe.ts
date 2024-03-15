@@ -40,11 +40,8 @@ describe('tic-tac-toe', () => {
 
   const program = anchor.workspace.TicTacToe as Program<TicTacToe>;
   const programProvider = program.provider as anchor.AnchorProvider;
-  // const [gamePda, gameBump] = PublicKey.findProgramAddressSync(
-  //     [Buffer.from("game")],
-  //     program.programId
-  //   );
   const playerTwo = anchor.web3.Keypair.generate();
+
   it("new game!", async () => {
     const game_id = generateRandomString(8);
     const [gamePda, gameBump] = PublicKey.findProgramAddressSync(
@@ -88,199 +85,235 @@ describe('tic-tac-toe', () => {
       .to
       .eql([playerOne.publicKey, playerTwo.publicKey]);
   });
-  // it('start game!', async () => {
-  //   const [gamePda, gameBump] = PublicKey.findProgramAddressSync(
-  //       [Buffer.from("game")],
-  //       program.programId
-  //     );
-  //   const playerOne = programProvider.wallet;
 
-  //   await program.methods.startGame().accounts({
-  //     game: gamePda,
-  //     playerOne: playerOne.publicKey,
-  //   }).rpc();
+  it('start game!', async () => {
+    const game_id = generateRandomString(8);
+    const [gamePda, gameBump] = PublicKey.findProgramAddressSync(
+        [Buffer.from("game"), Buffer.from(game_id)],
+        program.programId
+      );
+    const playerOne = programProvider.wallet;
+    // new game 
+    await program.methods.newGame(game_id).accounts({
+      game: gamePda,
+      playerOne: playerOne.publicKey,
+    }).signers([]).rpc();
+    // join game
+    await program.methods
+      .joinGame(playerTwo.publicKey)
+      .accounts({
+        game: gamePda,
+      })
+      .rpc();
 
-  //   let gameState = await program.account.game.fetch(gamePda);
+    await program.methods.startGame().accounts({
+      game: gamePda,
+      playerOne: playerOne.publicKey,
+    }).rpc();
 
-  //   expect(gameState.turn).to.equal(1);
-  //   expect(gameState.state).to.eql({ active: {} });
-  //   expect(gameState.board)
-  //     .to
-  //     .eql([[null,null,null],[null,null,null],[null,null,null]]);
-  // })
+    let gameState = await program.account.game.fetch(gamePda);
 
-  // it('player one wins!', async () => {
-  //   const [gamePda, bump] = PublicKey.findProgramAddressSync([Buffer.from("game")], program.programId);
-  //   const playerOne = programProvider.wallet;
-  //   let gameState = await program.account.game.fetch(gamePda);
-  //   expect(gameState.turn).to.equal(1);
-  //   expect(gameState.state).to.eql({ active: {} });
-  //   expect(gameState.board)
-  //     .to
-  //     .eql([[null,null,null],[null,null,null],[null,null,null]]);
+    expect(gameState.turn).to.equal(1);
+    expect(gameState.state).to.eql({ active: {} });
+    expect(gameState.board)
+      .to
+      .eql([[null,null,null],[null,null,null],[null,null,null]]);
+  })
 
-  //   await play(
-  //     program,
-  //     gamePda,
-  //     playerOne,
-  //     {row: 0, column: 0},
-  //     2,
-  //     { active: {}, },
-  //     [
-  //       [{x:{}},null,null],
-  //       [null,null,null],
-  //       [null,null,null]
-  //     ]
-  //   );
+  it('player one wins!', async () => {
+
+    const game_id = generateRandomString(8);
+    const [gamePda, gameBump] = PublicKey.findProgramAddressSync(
+        [Buffer.from("game"), Buffer.from(game_id)],
+        program.programId
+      );
+    const playerOne = programProvider.wallet;
+    await program.methods.newGame(game_id).accounts({
+      game: gamePda,
+      playerOne: playerOne.publicKey,
+    }).signers([]).rpc();
+    // join game
+    await program.methods
+      .joinGame(playerTwo.publicKey)
+      .accounts({
+        game: gamePda,
+      })
+      .rpc();
+
+    await program.methods.startGame().accounts({
+      game: gamePda,
+      playerOne: playerOne.publicKey,
+    }).rpc();
+
+    let gameState = await program.account.game.fetch(gamePda);
+    expect(gameState.turn).to.equal(1);
+    expect(gameState.state).to.eql({ active: {} });
+    expect(gameState.board)
+      .to
+      .eql([[null,null,null],[null,null,null],[null,null,null]]);
+
+    await play(
+      program,
+      gamePda,
+      playerOne,
+      {row: 0, column: 0},
+      2,
+      { active: {}, },
+      [
+        [{x:{}},null,null],
+        [null,null,null],
+        [null,null,null]
+      ]
+    );
 
 
-  //   try {
-  //     await play(
-  //       program,
-  //       gamePda,
-  //       playerOne, // same player in subsequent turns
-  //       // change sth about the tx because
-  //       // duplicate tx that come in too fast
-  //       // after each other may get dropped
-  //       {row: 1, column: 0},
-  //       2,
-  //       { active: {}, },
-  //       [
-  //         [{x:{}},null,null],
-  //         [null,null,null],
-  //         [null,null,null]
-  //       ]
-  //     );
-  //     chai.assert(false, "should've failed but didn't ");
-  //   } catch (_err) {
-  //     expect(_err).to.be.instanceOf(AnchorError);
-  //     const err: AnchorError = _err;
-  //     expect(err.error.errorCode.code).to.equal("NotPlayersTurn");
-  //     expect(err.error.errorCode.number).to.equal(6003);
-  //     expect(err.program.equals(program.programId)).is.true;
-  //     // expect(err.error.comparedValues).to.deep.equal([playerTwo.publicKey, playerOne.publicKey]);
-  //   }
+    try {
+      await play(
+        program,
+        gamePda,
+        playerOne, // same player in subsequent turns
+        // change sth about the tx because
+        // duplicate tx that come in too fast
+        // after each other may get dropped
+        {row: 1, column: 0},
+        2,
+        { active: {}, },
+        [
+          [{x:{}},null,null],
+          [null,null,null],
+          [null,null,null]
+        ]
+      );
+      chai.assert(false, "should've failed but didn't ");
+    } catch (_err) {
+      expect(_err).to.be.instanceOf(AnchorError);
+      const err: AnchorError = _err;
+      expect(err.error.errorCode.code).to.equal("NotPlayersTurn");
+      expect(err.error.errorCode.number).to.equal(6003);
+      expect(err.program.equals(program.programId)).is.true;
+      // expect(err.error.comparedValues).to.deep.equal([playerTwo.publicKey, playerOne.publicKey]);
+    }
 
-  //   await play(
-  //     program,
-  //     gamePda,
-  //     playerTwo,
-  //     {row: 1, column: 0},
-  //     3,
-  //     { active: {}, },
-  //     [
-  //       [{x:{}},null,null],
-  //       [{o:{}},null,null],
-  //       [null,null,null]
-  //     ]
-  //   );
+    await play(
+      program,
+      gamePda,
+      playerTwo,
+      {row: 1, column: 0},
+      3,
+      { active: {}, },
+      [
+        [{x:{}},null,null],
+        [{o:{}},null,null],
+        [null,null,null]
+      ]
+    );
 
-  //   await play(
-  //     program,
-  //     gamePda,
-  //     playerOne,
-  //     {row: 0, column: 1},
-  //     4,
-  //     { active: {}, },
-  //     [
-  //       [{x:{}},{x: {}},null],
-  //       [{o:{}},null,null],
-  //       [null,null,null]
-  //     ]
-  //   );
+    await play(
+      program,
+      gamePda,
+      playerOne,
+      {row: 0, column: 1},
+      4,
+      { active: {}, },
+      [
+        [{x:{}},{x: {}},null],
+        [{o:{}},null,null],
+        [null,null,null]
+      ]
+    );
 
-  //   try {
-  //     await play(
-  //       program,
-  //       gamePda,
-  //       playerTwo,
-  //       {row: 5, column: 1}, // out of bounds row
-  //       4,
-  //       { active: {}, },
-  //       [
-  //         [{x:{}},{x: {}},null],
-  //         [{o:{}},null,null],
-  //         [null,null,null]
-  //       ]
-  //     );
-  //     chai.assert(false, "should've failed but didn't ");
-  //   } catch (_err) {
-  //     expect(_err).to.be.instanceOf(AnchorError);
-  //     const err: AnchorError = _err;
-  //     expect(err.error.errorCode.number).to.equal(6000);
-  //     expect(err.error.errorCode.code).to.equal("TileOutOfBounds");
-  //   }
+    try {
+      await play(
+        program,
+        gamePda,
+        playerTwo,
+        {row: 5, column: 1}, // out of bounds row
+        4,
+        { active: {}, },
+        [
+          [{x:{}},{x: {}},null],
+          [{o:{}},null,null],
+          [null,null,null]
+        ]
+      );
+      chai.assert(false, "should've failed but didn't ");
+    } catch (_err) {
+      expect(_err).to.be.instanceOf(AnchorError);
+      const err: AnchorError = _err;
+      expect(err.error.errorCode.number).to.equal(6000);
+      expect(err.error.errorCode.code).to.equal("TileOutOfBounds");
+    }
 
-  //   await play(
-  //     program,
-  //     gamePda,
-  //     playerTwo,
-  //     {row: 1, column: 1},
-  //     5,
-  //     { active: {}, },
-  //     [
-  //       [{x:{}},{x: {}},null],
-  //       [{o:{}},{o:{}},null],
-  //       [null,null,null]
-  //     ]
-  //   );
+    await play(
+      program,
+      gamePda,
+      playerTwo,
+      {row: 1, column: 1},
+      5,
+      { active: {}, },
+      [
+        [{x:{}},{x: {}},null],
+        [{o:{}},{o:{}},null],
+        [null,null,null]
+      ]
+    );
 
-  //   try {
-  //     await play(
-  //       program,
-  //       gamePda,
-  //       playerOne,
-  //       {row: 0, column: 0},
-  //       5,
-  //       { active: {}, },
-  //       [
-  //         [{x:{}},{x: {}},null],
-  //         [{o:{}},{o:{}},null],
-  //         [null,null,null]
-  //       ]
-  //     );
-  //     chai.assert(false, "should've failed but didn't ");
-  //   } catch (_err) {
-  //     expect(_err).to.be.instanceOf(AnchorError);
-  //     const err: AnchorError = _err;
-  //     expect(err.error.errorCode.number).to.equal(6001);
-  //   }
+    try {
+      await play(
+        program,
+        gamePda,
+        playerOne,
+        {row: 0, column: 0},
+        5,
+        { active: {}, },
+        [
+          [{x:{}},{x: {}},null],
+          [{o:{}},{o:{}},null],
+          [null,null,null]
+        ]
+      );
+      chai.assert(false, "should've failed but didn't ");
+    } catch (_err) {
+      expect(_err).to.be.instanceOf(AnchorError);
+      const err: AnchorError = _err;
+      expect(err.error.errorCode.number).to.equal(6001);
+    }
 
-  //   await play(
-  //     program,
-  //     gamePda,
-  //     playerOne,
-  //     {row: 0, column: 2},
-  //     5,
-  //     { won: { winner: playerOne.publicKey }, },
-  //     [
-  //       [{x:{}},{x: {}},{x: {}}],
-  //       [{o:{}},{o:{}},null],
-  //       [null,null,null]
-  //     ]
-  //   );
+    await play(
+      program,
+      gamePda,
+      playerOne,
+      {row: 0, column: 2},
+      5,
+      { won: { winner: playerOne.publicKey }, },
+      [
+        [{x:{}},{x: {}},{x: {}}],
+        [{o:{}},{o:{}},null],
+        [null,null,null]
+      ]
+    );
 
-  //   try {
-  //     await play(
-  //       program,
-  //       gamePda,
-  //       playerOne,
-  //       {row: 0, column: 2},
-  //       5,
-  //       { won: { winner: playerOne.publicKey }, },
-  //       [
-  //         [{x:{}},{x: {}},{x: {}}],
-  //         [{o:{}},{o:{}},null],
-  //         [null,null,null]
-  //       ]
-  //     );
-  //     chai.assert(false, "should've failed but didn't ");
-  //   } catch (_err) {
-  //     expect(_err).to.be.instanceOf(AnchorError);
-  //     const err: AnchorError = _err;
-  //     expect(err.error.errorCode.number).to.equal(6002);
-  //   }
-  // })
+    try {
+      await play(
+        program,
+        gamePda,
+        playerOne,
+        {row: 0, column: 2},
+        5,
+        { won: { winner: playerOne.publicKey }, },
+        [
+          [{x:{}},{x: {}},{x: {}}],
+          [{o:{}},{o:{}},null],
+          [null,null,null]
+        ]
+      );
+      chai.assert(false, "should've failed but didn't ");
+    } catch (_err) {
+      expect(_err).to.be.instanceOf(AnchorError);
+      const err: AnchorError = _err;
+      expect(err.error.errorCode.number).to.equal(6002);
+    }
+  })
 
 //   it('tie', async () => {
 //     const game = PublicKey.findProgramAddressSync([Buffer.from("game"), program.programId);

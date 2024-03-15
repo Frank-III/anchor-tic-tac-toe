@@ -1,32 +1,32 @@
 <script lang="ts">
+	import '../app.pcss';
 	import { onMount } from 'svelte';
 	import { clusterApiUrl } from '@solana/web3.js';
-	import { WalletProvider } from '@aztemi/svelte-on-solana-wallet-adapter-ui';
-	import { AnchorConnectionProvider } from '@aztemi/svelte-on-solana-wallet-adapter-anchor';
+	import { WalletProvider } from '@portal-payments/wallet-adapter-ui';
+	import { AnchorConnectionProvider } from '@portal-payments/wallet-adapter-anchor';
 	import idl from '../../tic-tac-toe/target/idl/tic_tac_toe.json';
+	import { Toaster } from '$lib/components/ui/sonner';
 
 	const localStorageKey = 'walletAdapter';
 	const network = clusterApiUrl('devnet');
 
-	let wallets;
+	let wallets: any[];
 
 	onMount(async () => {
-		const { PhantomWalletAdapter, SolflareWalletAdapter, TorusWalletAdapter } = await import(
+		const { PhantomWalletAdapter, SolflareWalletAdapter } = await import(
 			'@solana/wallet-adapter-wallets'
 		);
 
-		const walletsMap = [
-			new PhantomWalletAdapter(),
-			new SolflareWalletAdapter(),
-			new TorusWalletAdapter()
-		];
+		const walletsMap = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
 
 		wallets = walletsMap;
 	});
 </script>
 
-<WalletProvider {localStorageKey} {wallets} autoConnect />
-<AnchorConnectionProvider {network} {idl} />
+<WalletProvider {localStorageKey} {wallets} autoConnect></WalletProvider>
+<AnchorConnectionProvider {network} {idl}></AnchorConnectionProvider>
 <div>
 	<slot />
 </div>
+
+<Toaster />
