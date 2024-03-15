@@ -315,143 +315,164 @@ describe('tic-tac-toe', () => {
     }
   })
 
-//   it('tie', async () => {
-//     const game = PublicKey.findProgramAddressSync([Buffer.from("game"), program.programId);
-//     let gameState = await program.account.game.fetch(gamePda);
-//     expect(gameState.turn).to.equal(1);
-//     expect(gameState.players)
-//       .to
-//       .eql([playerOne.publicKey, playerTwo.publicKey]);
-//     expect(gameState.state).to.eql({ active: {} });
-//     expect(gameState.board)
-//       .to
-//       .eql([[null,null,null],[null,null,null],[null,null,null]]);
+  it('tie', async () => {
+    const game_id = generateRandomString(8);
+    const [gamePda, gameBump] = PublicKey.findProgramAddressSync(
+        [Buffer.from("game"), Buffer.from(game_id)],
+        program.programId
+      );
+    const playerOne = programProvider.wallet;
+    await program.methods.newGame(game_id).accounts({
+      game: gamePda,
+      playerOne: playerOne.publicKey,
+    }).signers([]).rpc();
+    // join game
+    await program.methods
+      .joinGame(playerTwo.publicKey)
+      .accounts({
+        game: gamePda,
+      })
+      .rpc();
 
-//     await play(
-//       program,
-//       gamePda,
-//       playerOne,
-//       {row: 0, column: 0},
-//       2,
-//       { active: {}, },
-//       [
-//         [{x:{}},null,null],
-//         [null,null,null],
-//         [null,null,null]
-//       ]
-//     );
+    await program.methods.startGame().accounts({
+      game: gamePda,
+      playerOne: playerOne.publicKey,
+    }).rpc();
+    let gameState = await program.account.game.fetch(gamePda);
+    expect(gameState.turn).to.equal(1);
+    expect(gameState.players)
+      .to
+      .eql([playerOne.publicKey, playerTwo.publicKey]);
+    expect(gameState.state).to.eql({ active: {} });
+    expect(gameState.board)
+      .to
+      .eql([[null,null,null],[null,null,null],[null,null,null]]);
 
-//     await play(
-//       program,
-//       gamePda,
-//       playerTwo,
-//       {row: 1, column: 1},
-//       3,
-//       { active: {}, },
-//       [
-//         [{x:{}},null,null],
-//         [null,{o:{}},null],
-//         [null,null,null]
-//       ]
-//     );
+    await play(
+      program,
+      gamePda,
+      playerOne,
+      {row: 0, column: 0},
+      2,
+      { active: {}, },
+      [
+        [{x:{}},null,null],
+        [null,null,null],
+        [null,null,null]
+      ]
+    );
 
-//     await play(
-//       program,
-//       gamePda,
-//       playerOne,
-//       {row: 2, column: 0},
-//       4,
-//       { active: {}, },
-//       [
-//         [{x:{}},null,null],
-//         [null,{o:{}},null],
-//         [{x:{}},null,null]
-//       ]
-//     );
+    await play(
+      program,
+      gamePda,
+      playerTwo,
+      {row: 1, column: 1},
+      3,
+      { active: {}, },
+      [
+        [{x:{}},null,null],
+        [null,{o:{}},null],
+        [null,null,null]
+      ]
+    );
 
-//     await play(
-//       program,
-//       gamePda,
-//       playerTwo,
-//       {row: 1, column: 0},
-//       5,
-//       { active: {}, },
-//       [
-//         [{x:{}},null,null],
-//         [{o:{}},{o:{}},null],
-//         [{x:{}},null,null]
-//       ]
-//     );
+    await play(
+      program,
+      gamePda,
+      playerOne,
+      {row: 2, column: 0},
+      4,
+      { active: {}, },
+      [
+        [{x:{}},null,null],
+        [null,{o:{}},null],
+        [{x:{}},null,null]
+      ]
+    );
 
-//     await play(
-//       program,
-//       gamePda,
-//       playerOne,
-//       {row: 1, column: 2},
-//       6,
-//       { active: {}, },
-//       [
-//         [{x:{}},null,null],
-//         [{o:{}},{o:{}},{x:{}}],
-//         [{x:{}},null,null]
-//       ]
-//     );
+    await play(
+      program,
+      gamePda,
+      playerTwo,
+      {row: 1, column: 0},
+      5,
+      { active: {}, },
+      [
+        [{x:{}},null,null],
+        [{o:{}},{o:{}},null],
+        [{x:{}},null,null]
+      ]
+    );
 
-//     await play(
-//       program,
-//       gamePda,
-//       playerTwo,
-//       {row: 0, column: 1},
-//       7,
-//       { active: {}, },
-//       [
-//         [{x:{}},{o:{}},null],
-//         [{o:{}},{o:{}},{x:{}}],
-//         [{x:{}},null,null]
-//       ]
-//     );
+    await play(
+      program,
+      gamePda,
+      playerOne,
+      {row: 1, column: 2},
+      6,
+      { active: {}, },
+      [
+        [{x:{}},null,null],
+        [{o:{}},{o:{}},{x:{}}],
+        [{x:{}},null,null]
+      ]
+    );
 
-//     await play(
-//       program,
-//       gamePda,
-//       playerOne,
-//       {row: 2, column: 1},
-//       8,
-//       { active: {}, },
-//       [
-//         [{x:{}},{o:{}},null],
-//         [{o:{}},{o:{}},{x:{}}],
-//         [{x:{}},{x:{}},null]
-//       ]
-//     );
+    await play(
+      program,
+      gamePda,
+      playerTwo,
+      {row: 0, column: 1},
+      7,
+      { active: {}, },
+      [
+        [{x:{}},{o:{}},null],
+        [{o:{}},{o:{}},{x:{}}],
+        [{x:{}},null,null]
+      ]
+    );
 
-//     await play(
-//       program,
-//       gamePda,
-//       playerTwo,
-//       {row: 2, column: 2},
-//       9,
-//       { active: {}, },
-//       [
-//         [{x:{}},{o:{}},null],
-//         [{o:{}},{o:{}},{x:{}}],
-//         [{x:{}},{x:{}},{o:{}}]
-//       ]
-//     );
+    await play(
+      program,
+      gamePda,
+      playerOne,
+      {row: 2, column: 1},
+      8,
+      { active: {}, },
+      [
+        [{x:{}},{o:{}},null],
+        [{o:{}},{o:{}},{x:{}}],
+        [{x:{}},{x:{}},null]
+      ]
+    );
+
+    await play(
+      program,
+      gamePda,
+      playerTwo,
+      {row: 2, column: 2},
+      9,
+      { active: {}, },
+      [
+        [{x:{}},{o:{}},null],
+        [{o:{}},{o:{}},{x:{}}],
+        [{x:{}},{x:{}},{o:{}}]
+      ]
+    );
 
 
-//     await play(
-//       program,
-//       gamePda,
-//       playerOne,
-//       {row: 0, column: 2},
-//       9,
-//       { tie: {}, },
-//       [
-//         [{x:{}},{o:{}},{x:{}}],
-//         [{o:{}},{o:{}},{x:{}}],
-//         [{x:{}},{x:{}},{o:{}}]
-//       ]
-//     );
-//   })
+    await play(
+      program,
+      gamePda,
+      playerOne,
+      {row: 0, column: 2},
+      9,
+      { tie: {}, },
+      [
+        [{x:{}},{o:{}},{x:{}}],
+        [{o:{}},{o:{}},{x:{}}],
+        [{x:{}},{x:{}},{o:{}}]
+      ]
+    );
+  })
 });

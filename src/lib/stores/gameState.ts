@@ -7,6 +7,7 @@ export const gameState = writable<{
   gamePda?: PublicKey;
   players: PublicKey[];
   started: boolean;
+  state?: {active: {}} | {won: {winner: PublicKey}} | {tie: {}};
   turn: number;
   isHost: boolean;
   gameBoard: Array<Array<{x: {}} | {o: {}} | null>>;

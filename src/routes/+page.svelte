@@ -10,11 +10,14 @@
 	import { PublicKey } from '@solana/web3.js';
 	import { onDestroy } from 'svelte';
 	import GameBoard from './GameBoard.svelte';
+	import { Button } from '$lib/components/ui/button';
 
 	// let value;
 	let gameId: string;
 	let gamePda: PublicKey | undefined;
 	let gameSub: number;
+	let state: { active: {} } | { won: { winner: PublicKey } } | { tie: {} } | undefined;
+	let isHost: boolean;
 
 	$: if (gameId && $walletStore.publicKey && $workSpace.program) {
 		const [gamePda] = PublicKey.findProgramAddressSync(
@@ -24,12 +27,13 @@
 		gameState.update((val) => ({ ...val, gamePda: gamePda }));
 	}
 
-	$: if (gameId && $walletStore.publicKey && $workSpace.program && gamePda) {
+	$: if (gameId && gamePda && $walletStore.publicKey && $workSpace.program) {
 		gameSub = $workSpace.connection.onAccountChange(gamePda, async (updateInfo, context) => {
-			await $workSpace.program?.account.game.fetch(gamePda).then((res) => {
+			await $workSpace.program?.account.game.fetch(gamePda!).then((res: any) => {
 				console.log(res);
 				gameState.update((val) => ({
 					...val,
+					state: res.state,
 					players: res.players,
 					gameBoard: res.board,
 					turn: res.turn
@@ -38,9 +42,37 @@
 		});
 	}
 
+	function closeGame() {
+		$workSpace.program?.methods
+			.closeGame()
+			.accounts({
+				game: gamePda,
+				playerOne: $walletStore.publicKey!
+			})
+			.rpc()
+			.then((res) => {
+				toast.success('Game closed successfully');
+			})
+			.catch((err) => {
+				toast.error(err);
+			});
+
+		gameState.update((val) => ({
+			...val,
+			gameId: '',
+			gamePda: undefined,
+			players: [],
+			gameBoard: [],
+			turn: 0,
+			state: undefined
+		}));
+	}
+
 	const unsubscribe = gameState.subscribe((val) => {
 		gameId = val.gameId;
 		gamePda = val.gamePda;
+		state = val.state;
+		isHost = val.isHost;
 	});
 
 	onDestroy(() => {
@@ -54,15 +86,12 @@
 <div class="wrapper-app h-[100vh] w-full">
 	<div class="title absolute top-0 flex h-[60px] flex-row items-center justify-center">
 		<h1>Solana Tic Tac Toe</h1>
-		<p>
-			Demo of <a href="https://github.com/solana-labs/wallet-adapter"
-				>svelte-on-solana/wallet-adapter</a
-			>, for implementation in Svelte of the
-			<strong>wallet adapter</strong>
-		</p>
 	</div>
 
-	<div class="absolute right-3 top-3">
+	<div class="absolute right-3 top-3 flex flex-row gap-5">
+		{#if isHost && state && ('won' in state || 'tie' in state)}
+			<Button on:click={() => {}}>Home</Button>
+		{/if}
 		<WalletButton />
 	</div>
 

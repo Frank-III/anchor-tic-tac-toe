@@ -28,4 +28,8 @@ pub mod tic_tac_toe {
     pub fn play(ctx: Context<Play>, tile: Tile) -> Result<()> {
         instructions::play::play(ctx, tile)
     }
+
+    pub fn close_game(ctx: Context<CloseGame>) -> Result<()> {
+        instructions::close_game::close_game(ctx)
+    }
 }

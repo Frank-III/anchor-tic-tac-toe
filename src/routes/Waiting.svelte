@@ -14,7 +14,7 @@
 
 	// Use a single subscription to handle all state updates
 	const unsubscribe = gameState.subscribe(
-		({ gameId: newGameId, players: newPlayers, gamePda: newGamePda }) => {
+		({ gameId: newGameId, players: newPlayers, gamePda: newGamePda, state: newState }) => {
 			gameId = newGameId;
 			gamePda = newGamePda;
 			players = newPlayers;
@@ -52,5 +52,5 @@
 	{#each players as player}
 		<p class="text-md">{player.toBase58()}</p>
 	{/each}
-	<Button disabled={players.length < 2}>Start Game</Button>
+	<Button disabled={players.length < 2} on:click={startGame}>Start Game</Button>
 </div>
