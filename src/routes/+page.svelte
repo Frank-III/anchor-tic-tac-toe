@@ -11,7 +11,7 @@
 	import GameBoard from './GameBoard.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { BorshCoder } from '@project-serum/anchor';
-	import idl from '../../tic-tac-toe/target/idl/tic_tac_toe.json';
+	import idl from '$lib/tic_tac_toe.json';
 
 	const coder = new BorshCoder(idl); // Initialize BorshCoder with your program's IDL
 

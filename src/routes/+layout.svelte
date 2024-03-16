@@ -4,7 +4,7 @@
 	import { clusterApiUrl } from '@solana/web3.js';
 	import { WalletProvider } from '@portal-payments/wallet-adapter-ui';
 	import { AnchorConnectionProvider } from '@portal-payments/wallet-adapter-anchor';
-	import idl from '../../tic-tac-toe/target/idl/tic_tac_toe.json';
+	import idl from '$lib/tic_tac_toe.json';
 	import { Toaster } from '$lib/components/ui/sonner';
 
 	const localStorageKey = 'walletAdapter';
