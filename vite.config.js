@@ -7,11 +7,11 @@ import path from 'path';
 /** @type {import('vite').UserConfig} */
 const config = {
   plugins: [sveltekit()],
-  server: {
-    fs: {
-      allow: ['./tic-tac-toe/target/idl']
-    }
-  },
+  // server: {
+  //   fs: {
+  //     allow: ['./tic-tac-toe/target/idl']
+  //   }
+  // },
   optimizeDeps: {
     include: ['@project-serum/anchor', '@solana/web3.js'],
     esbuildOptions: {
