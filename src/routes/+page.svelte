@@ -10,10 +10,6 @@
 	import { onDestroy } from 'svelte';
 	import GameBoard from './GameBoard.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { BorshCoder } from '@project-serum/anchor';
-	import idl from '$lib/tic_tac_toe.json';
-
-	const coder = new BorshCoder(idl); // Initialize BorshCoder with your program's IDL
 
 	// let value;
 	let gameId: string;
@@ -32,7 +28,7 @@
 
 	$: if (gameId && gamePda && $walletStore.publicKey && $workSpace.program) {
 		gameSub = $workSpace.connection.onAccountChange(gamePda, async (updateInfo, context) => {
-			const game = coder.accounts.decode('Game', updateInfo.data);
+			const game = $workSpace.program?.coder.accounts.decode('Game', updateInfo.data);
 			gameState.update((val) => ({
 				...val,
 				state: game.state,
@@ -40,20 +36,11 @@
 				gameBoard: game.board,
 				turn: game.turn
 			}));
-			// await $workSpace.program?.account.game.fetch(gamePda!).then((res: any) => {
-			// 	console.log(res);
-			// 	gameState.update((val) => ({
-			// 		...val,
-			// 		state: res.state,
-			// 		players: res.players,
-			// 		gameBoard: res.board,
-			// 		turn: res.turn
-			// 	}));
-			// });
 		});
 	}
 
 	function closeGame() {
+		if (!gamePda && !$walletStore?.connected) return;
 		$workSpace.program?.methods
 			.closeGame()
 			.accounts({

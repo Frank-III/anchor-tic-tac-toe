@@ -2099,10 +2099,10 @@
     process "^0.11.10"
     stream-browserify "^3.0.0"
 
-"@solana/wallet-adapter-trezor@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-trezor/-/wallet-adapter-trezor-0.1.1.tgz#dadd3e72db35de80151dd4b5b4c7338b6e6bb4e6"
-  integrity sha512-TNA+koyyMo7Apbp2wVxftON5KNT+YmGW/TKiQmJ/6jG4VSw19u4FPUyApMYMvXv0ebUifDfRY7VxL1CJiT5tOQ==
+"@solana/wallet-adapter-trezor@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-trezor/-/wallet-adapter-trezor-0.1.2.tgz#05c1a31ac9bbbbf9457927cec1152965423c7362"
+  integrity sha512-x4nXntYi1SIv63ZdXWX/Rq/VKwguByKu67WpyUXsu8kOdviksb20bQMuAR7Ue41oJ9zSnLlTxAxA1SuWNkFRBg==
   dependencies:
     "@solana/wallet-adapter-base" "^0.9.23"
     "@trezor/connect-web" "^9.2.1"
@@ -2134,9 +2134,9 @@
     "@solana/wallet-adapter-base" "^0.9.23"
 
 "@solana/wallet-adapter-wallets@^0.19.31":
-  version "0.19.31"
-  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-wallets/-/wallet-adapter-wallets-0.19.31.tgz#810de6d0927659767f39fd2f2e5016acc284c34f"
-  integrity sha512-CH+ShvL4zfVl/lciuwQiGj9gGT+58+SoE3FXOfAtmDaalaGHoSuTqeNufRhd3J7VF2bJqEbZvCkn7iqrNzXLGg==
+  version "0.19.32"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-wallets/-/wallet-adapter-wallets-0.19.32.tgz#2b3c887e825a480c7c210d2794c19a7c2c1ed57a"
+  integrity sha512-voZYQiIy1yXuKvm7x7YpnQ53eiJC7NpIYSQjzApOUiswiBRVeYcnPO4O/MMPUwsGkS7iZKqKZjo5CnOaN44n+g==
   dependencies:
     "@solana/wallet-adapter-alpha" "^0.1.10"
     "@solana/wallet-adapter-avana" "^0.1.13"
@@ -2169,7 +2169,7 @@
     "@solana/wallet-adapter-tokenary" "^0.1.12"
     "@solana/wallet-adapter-tokenpocket" "^0.4.19"
     "@solana/wallet-adapter-torus" "^0.11.28"
-    "@solana/wallet-adapter-trezor" "^0.1.1"
+    "@solana/wallet-adapter-trezor" "^0.1.2"
     "@solana/wallet-adapter-trust" "^0.1.13"
     "@solana/wallet-adapter-unsafe-burner" "^0.1.7"
     "@solana/wallet-adapter-walletconnect" "^0.1.16"
@@ -2821,9 +2821,9 @@
     form-data "^4.0.0"
 
 "@types/node@*", "@types/node@>=13.7.0":
-  version "20.11.27"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.11.27.tgz#debe5cfc8a507dd60fe2a3b4875b1604f215c2ac"
-  integrity sha512-qyUZfMnCg1KEz57r7pzFtSGt49f6RPkPBis3Vo4PbS7roQEDn22hiHzl/Lo1q4i4hDEgBJmBF/NTNg2XR0HbFg==
+  version "20.11.28"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.11.28.tgz#4fd5b2daff2e580c12316e457473d68f15ee6f66"
+  integrity sha512-M/GPWVS2wLkSkNHVeLkrF2fD5Lx5UC4PxA0uZcKc6QqbIQUJyW1jVjueJYi1z8n0I5PxYrtpnPnWglE+y9A0KA==
   dependencies:
     undici-types "~5.26.4"
 
@@ -4514,9 +4514,9 @@ eastasianwidth@^0.2.0:
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
 
 electron-to-chromium@^1.4.668:
-  version "1.4.707"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.707.tgz#77904f87432b8b50b8b8b654ba3940d2bef48d63"
-  integrity sha512-qRq74Mo7ChePOU6GHdfAJ0NREXU8vQTlVlfWz3wNygFay6xrd/fY2J7oGHwrhFeU30OVctGLdTh/FcnokTWpng==
+  version "1.4.708"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.708.tgz#d54d3b47cb44ae6b190067439c42135456907893"
+  integrity sha512-iWgEEvREL4GTXXHKohhh33+6Y8XkPI5eHihDmm8zUk5Zo7HICEW+wI/j5kJ2tbuNUCXJ/sNXa03ajW635DiJXA==
 
 elliptic@6.5.4:
   version "6.5.4"
@@ -8024,9 +8024,9 @@ tailwind-merge@^2.2.0, tailwind-merge@^2.2.1:
     "@babel/runtime" "^7.23.7"
 
 tailwind-variants@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/tailwind-variants/-/tailwind-variants-0.2.0.tgz#5c3a24afb6e8bb23f33aa3aa3550add8848de8a3"
-  integrity sha512-EuW5Sic7c0tzp+p5rJwAgb7398Jb0hi4zkyCstOoZPW0DWwr+EWkNtnZYEo5CjgE1tazHUzyt4oIhss64UXRVA==
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/tailwind-variants/-/tailwind-variants-0.2.1.tgz#132f2537b0150819036f6c4f47d5c50b929b758d"
+  integrity sha512-2xmhAf4UIc3PijOUcJPA1LP4AbxhpcHuHM2C26xM0k81r0maAO6uoUSHl3APmvHZcY5cZCY/bYuJdfFa4eGoaw==
   dependencies:
     tailwind-merge "^2.2.0"
 
@@ -8257,9 +8257,9 @@ ua-parser-js@^1.0.37:
   integrity sha512-bhTyI94tZofjo+Dn8SN6Zv8nBDvyXTymAdM3LDI/0IboIUwTu1rEhW7v2TfiVsoYWgkQ4kOVqnI8APUFbIQIFQ==
 
 ufo@^1.3.0, ufo@^1.3.2, ufo@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/ufo/-/ufo-1.4.0.tgz#39845b31be81b4f319ab1d99fd20c56cac528d32"
-  integrity sha512-Hhy+BhRBleFjpJ2vchUNN40qgkh0366FWJGqVLYBHev0vpHTrXSA0ryT+74UiW6KWsldNurQMKGqCm1M2zBciQ==
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/ufo/-/ufo-1.5.1.tgz#ec42543a918def8d0ce185e498d080016f35daf6"
+  integrity sha512-HGyF79+/qZ4soRvM+nHERR2pJ3VXDZ/8sL1uLahdgEDf580NkgiWOxLk33FetExqOWp352JZRsgXbG/4MaGOSg==
 
 uint8arrays@^3.0.0, uint8arrays@^3.1.0:
   version "3.1.1"

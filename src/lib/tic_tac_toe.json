@@ -82,6 +82,27 @@
           }
         }
       ]
+    },
+    {
+      "name": "closeGame",
+      "accounts": [
+        {
+          "name": "game",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "playerOne",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
